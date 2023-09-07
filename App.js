@@ -1,20 +1,32 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from "react";
+import { View, Button } from "react-native";
+import axios from 'axios';
 
-export default function App() {
+function App() {
+  const [responseData, setResponseData] = useState({ headerData: "", bodyData: "" });
+
+  const postData = async () => {
+    try {
+      const response = await axios.post('https://chimpu.xyz/api/post.php', {
+        phonenumber: '9876543210', // phone number
+      });
+      const { headers, data } = response
+      setResponseData({ headerData: headers, bodyData: data });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "antiquewhite" }}>
+      {responseData && (<View style={{ alignItems: "center" }} >
+        <h1 style={{ marginBottom: "10px" }} >{responseData.bodyData.msg}</h1>
+        <h1>Data received in headers</h1>
+        <h4 style={{ marginBottom: "10px" }} >{responseData.headerData}</h4>
+      </View>)}
+      <Button title="Post Data" onPress={postData} />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
